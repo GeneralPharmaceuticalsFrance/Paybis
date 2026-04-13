@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tutoriel Paybis — General Pharmaceuticals</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --surface2: #181c24;
+    --border: rgba(255,255,255,0.07);
+    --accent: #f0a500;
+    --accent2: #e05c00;
+    --blue: #3b8beb;
+    --green: #22c55e;
+    --red: #ef4444;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --btc: #f7931a;
+    --eth: #627eea;
+    --usdt: #26a17b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* NOISE TEXTURE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 80px 24px 60px;
+    overflow: hidden;
+  }
+
+  .hero-glow {
+    position: absolute;
+    width: 700px;
+    height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(240,165,0,0.12) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(240,165,0,0.1);
+    border: 1px solid rgba(240,165,0,0.3);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 28px;
+    position: relative;
+  }
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s ease infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    position: relative;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 span {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 560px;
+    position: relative;
+    margin-bottom: 48px;
+    font-weight: 300;
+  }
+
+  .crypto-pills {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+    margin-bottom: 56px;
+  }
+
+  .pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    transition: all 0.2s;
+  }
+
+  .pill:hover { transform: translateY(-2px); }
+  .pill-btc { border-color: rgba(247,147,26,0.3); }
+  .pill-eth { border-color: rgba(98,126,234,0.3); }
+  .pill-usdt { border-color: rgba(38,161,123,0.3); }
+
+  .pill-icon { font-size: 20px; }
+
+  .scroll-hint {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    animation: bounce 2s ease infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+  }
+
+  .scroll-arrow { font-size: 18px; }
+
+  /* CONTAINER */
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* SECTION */
+  section {
+    padding: 80px 0;
+    border-top: 1px solid var(--border);
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(26px, 4vw, 40px);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+
+  .section-desc {
+    color: var(--muted);
+    font-size: 16px;
+    max-width: 580px;
+    margin-bottom: 48px;
+    font-weight: 300;
+  }
+
+  /* INTRO CARDS */
+  .intro-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .intro-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .intro-card:hover {
+    border-color: rgba(240,165,0,0.2);
+    transform: translateY(-3px);
+  }
+
+  .intro-card-icon {
+    font-size: 28px;
+    margin-bottom: 14px;
+  }
+
+  .intro-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .intro-card p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* FRAIS BLOCK */
+  .frais-block {
+    background: linear-gradient(135deg, rgba(240,165,0,0.08) 0%, rgba(224,92,0,0.05) 100%);
+    border: 1px solid rgba(240,165,0,0.2);
+    border-radius: 20px;
+    padding: 32px;
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+  }
+
+  .frais-icon {
+    font-size: 36px;
+    flex-shrink: 0;
+  }
+
+  .frais-block h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .frais-block p {
+    font-size: 15px;
+    color: #c0a06a;
+    line-height: 1.7;
+  }
+
+  .frais-block strong {
+    color: var(--accent);
+  }
+
+  /* STEPS */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 0 24px;
+    position: relative;
+  }
+
+  .step-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .step-num {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 2px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--accent);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-line {
+    width: 2px;
+    flex: 1;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    margin: 4px 0;
+    min-height: 40px;
+    opacity: 0.3;
+  }
+
+  .step:last-child .step-line { display: none; }
+
+  .step-right {
+    padding-bottom: 48px;
+  }
+
+  .step:last-child .step-right { padding-bottom: 0; }
+
+  .step-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+    margin-top: 14px;
+  }
+
+  .step-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+
+  .step-body {
+    color: #b0b8c8;
+    font-size: 15px;
+    line-height: 1.75;
+    margin-bottom: 20px;
+  }
+
+  /* MOCK UI */
+  .mock {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-top: 20px;
+    margin-bottom: 8px;
+  }
+
+  .mock-bar {
+    background: var(--surface2);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .mock-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .mock-dot.r { background: #ef4444; }
+  .mock-dot.y { background: #eab308; }
+  .mock-dot.g { background: #22c55e; }
+
+  .mock-url {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: monospace;
+    text-align: center;
+  }
+
+  .mock-body {
+    padding: 24px;
+  }
+
+  /* Paybis-style widget mock */
+  .widget {
+    background: #16191f;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .widget-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    padding: 4px;
+  }
+
+  .widget-tab {
+    flex: 1;
+    text-align: center;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--muted);
+    cursor: pointer;
+  }
+
+  .widget-tab.active {
+    background: var(--accent);
+    color: #000;
+    font-weight: 600;
+  }
+
+  .widget-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .widget-field {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+
+  .widget-field-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .widget-field-val {
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .widget-field-val .flag { font-size: 18px; }
+
+  .widget-btn {
+    width: 100%;
+    background: var(--accent);
+    color: #000;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 14px;
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  .widget-note {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  /* TIPS */
+  .tip {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: rgba(34,197,94,0.06);
+    border: 1px solid rgba(34,197,94,0.15);
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 14px;
+    color: #86efac;
+    margin-top: 16px;
+  }
+
+  .tip-icon { font-size: 18px; flex-shrink: 0; }
+
+  .warn {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: rgba(239,68,68,0.06);
+    border: 1px solid rgba(239,68,68,0.15);
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 14px;
+    color: #fca5a5;
+    margin-top: 16px;
+  }
+
+  /* CRYPTO CHOICE */
+  .crypto-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .crypto-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.2s;
+  }
+
+  .crypto-card:hover { transform: translateY(-3px); }
+
+  .crypto-card.btc { border-color: rgba(247,147,26,0.25); }
+  .crypto-card.eth { border-color: rgba(98,126,234,0.25); }
+  .crypto-card.usdt { border-color: rgba(38,161,123,0.25); }
+
+  .crypto-logo {
+    font-size: 36px;
+    margin-bottom: 12px;
+  }
+
+  .crypto-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .crypto-ticker {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-bottom: 14px;
+  }
+
+  .btc .crypto-ticker { color: var(--btc); }
+  .eth .crypto-ticker { color: var(--eth); }
+  .usdt .crypto-ticker { color: var(--usdt); }
+
+  .crypto-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .crypto-pro {
+    font-size: 12px;
+    color: #86efac;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+
+  .crypto-con {
+    font-size: 12px;
+    color: #fca5a5;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* WALLET BLOCK */
+  .wallet-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+  }
+
+  .wallet-address-mock {
+    background: var(--surface2);
+    border: 1px solid rgba(240,165,0,0.2);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-family: monospace;
+    font-size: 13px;
+    color: var(--accent);
+    word-break: break-all;
+    line-height: 1.6;
+    margin: 16px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .addr-icon { font-size: 20px; flex-shrink: 0; }
+
+  /* FEES TABLE */
+  .fees-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-top: 8px;
+  }
+
+  .fees-table th {
+    text-align: left;
+    padding: 10px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .fees-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: #d0d8e8;
+  }
+
+  .fees-table tr:last-child td { border-bottom: none; }
+
+  .fees-table .highlight { color: var(--accent); font-weight: 600; }
+  .fees-table .ok { color: var(--green); }
+
+  /* CHECKLIST */
+  .checklist {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 15px;
+    color: #b0b8c8;
+  }
+
+  .check-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(34,197,94,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: var(--green);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* CTA */
+  .cta-section {
+    text-align: center;
+    padding: 80px 24px;
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+  }
+
+  .cta-section h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+
+  .cta-section p {
+    color: var(--muted);
+    font-size: 17px;
+    margin-bottom: 36px;
+    font-weight: 300;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--accent);
+    color: #000;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 16px 36px;
+    border-radius: 100px;
+    text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: 0 0 40px rgba(240,165,0,0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 60px rgba(240,165,0,0.4);
+  }
+
+  /* PROGRESS INDICATOR */
+  .progress-nav {
+    position: fixed;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 100;
+  }
+
+  .progress-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+
+  .progress-dot.active {
+    background: var(--accent);
+    transform: scale(1.5);
+  }
+
+  /* KYC MOCK */
+  .kyc-steps {
+    display: flex;
+    gap: 12px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+
+  .kyc-step {
+    flex: 1;
+    min-width: 120px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .kyc-step .k-icon { font-size: 28px; margin-bottom: 8px; }
+  .kyc-step .k-label { font-size: 12px; color: var(--muted); }
+  .kyc-step .k-time { font-size: 11px; color: var(--accent); font-weight: 600; margin-top: 4px; }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 40px 24px;
+    color: var(--muted);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    position: relative;
+    z-index: 1;
+  }
+
+  footer a { color: var(--accent); text-decoration: none; }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(10,12,16,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .nav-logo-badge {
+    background: rgba(240,165,0,0.15);
+    color: var(--accent);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .nav-cta {
+    background: var(--accent);
+    color: #000;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 8px 20px;
+    border-radius: 100px;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .nav-cta:hover { opacity: 0.85; }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .progress-nav { display: none; }
+    .step { grid-template-columns: 44px 1fr; }
+    .step-num { width: 44px; height: 44px; font-size: 16px; }
+    .frais-block { flex-direction: column; }
+    .wallet-address-mock { font-size: 11px; }
+  }
+
+  /* ANIMATION */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .step-num-inner {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  hr.divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 32px 0;
+  }
+
+  .inline-highlight {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  code {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: monospace;
+    color: var(--accent);
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    💊 General Pharmaceuticals
+    <span class="nav-logo-badge">Guide Paiement</span>
+  </div>
+  <a href="https://paybis.com/fr/" target="_blank" class="nav-cta">Ouvrir Paybis →</a>
+</nav>
+
+<!-- PROGRESS DOTS -->
+<div class="progress-nav" id="progressNav">
+  <div class="progress-dot active" onclick="scrollToSection(0)" title="Accueil"></div>
+  <div class="progress-dot" onclick="scrollToSection(1)" title="Pourquoi Paybis"></div>
+  <div class="progress-dot" onclick="scrollToSection(2)" title="Choisir sa crypto"></div>
+  <div class="progress-dot" onclick="scrollToSection(3)" title="Créer un compte"></div>
+  <div class="progress-dot" onclick="scrollToSection(4)" title="Acheter"></div>
+  <div class="progress-dot" onclick="scrollToSection(5)" title="Envoyer"></div>
+  <div class="progress-dot" onclick="scrollToSection(6)" title="Frais"></div>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="sec0">
+  <div class="hero-glow"></div>
+  <div class="hero-grid"></div>
+
+  <div class="badge">
+    <span class="badge-dot"></span>
+    Guide complet débutants — General Pharmaceuticals
+  </div>
+
+  <h1>Payer en crypto<br>par <span>carte bancaire</span></h1>
+
+  <p class="hero-sub">
+    Zéro expérience requise. On part de rien et tu passes ta première commande crypto en moins de 15 minutes, depuis ton téléphone ou ton PC.
+  </p>
+
+  <div class="crypto-pills">
+    <div class="pill pill-btc"><span class="pill-icon">₿</span> Bitcoin</div>
+    <div class="pill pill-eth"><span class="pill-icon">⬨</span> Ethereum</div>
+    <div class="pill pill-usdt"><span class="pill-icon">$</span> USDT Stablecoin</div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Commencer</span>
+    <span class="scroll-arrow">↓</span>
+  </div>
+</section>
+
+<!-- SECTION 1 — POURQUOI PAYBIS -->
+<section id="sec1">
+  <div class="container">
+    <p class="section-label fade-in">Étape 0 — Le bon outil</p>
+    <h2 class="section-title fade-in">Pourquoi Paybis ?</h2>
+    <p class="section-desc fade-in">
+      C'est la plateforme la plus simple pour passer de ta carte bancaire à la crypto en quelques minutes, sans ouvrir de compte exchange compliqué.
+    </p>
+
+    <div class="intro-grid fade-in">
+      <div class="intro-card">
+        <div class="intro-card-icon">💳</div>
+        <h3>Carte bancaire directe</h3>
+        <p>Visa, Mastercard, carte prépayée. Tu rentres ton numéro de carte comme sur n'importe quel site e-commerce.</p>
+      </div>
+      <div class="intro-card">
+        <div class="intro-card-icon">⚡</div>
+        <h3>Instantané</h3>
+        <p>Pas d'attente bancaire. Le crypto est envoyé en quelques minutes une fois le paiement validé.</p>
+      </div>
+      <div class="intro-card">
+        <div class="intro-card-icon">🔒</div>
+        <h3>Légal et régulé</h3>
+        <p>Enregistré FinCEN (USA), FINTRAC (Canada), RDWW (Pologne/UE). Pas un exchange louche.</p>
+      </div>
+      <div class="intro-card">
+        <div class="intro-card-icon">🎁</div>
+        <h3>0 frais au premier achat</h3>
+        <p>Paybis ne prélève aucune commission sur ta toute première transaction. Seuls les frais carte s'appliquent.</p>
+      </div>
+    </div>
+
+    <div class="frais-block fade-in">
+      <div class="frais-icon">⚠️</div>
+      <div>
+        <h3>Les frais à prévoir — lis ça avant tout</h3>
+        <p>
+          Payer par carte bancaire sur Paybis génère des <strong>frais de 3 à 7%</strong> selon ta banque et le montant. Ce n'est pas Paybis qui les invente — c'est le processeur de ta carte. Concrètement : pour une commande à <strong>100€</strong>, tu devras envoyer environ <strong>106 à 108€</strong> de crypto pour que GP reçoive les 100€ convenus. Pense à compenser ce surplus dans ton calcul avant d'acheter.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 2 — CHOISIR SA CRYPTO -->
+<section id="sec2">
+  <div class="container">
+    <p class="section-label fade-in">Étape 1 — Choix</p>
+    <h2 class="section-title fade-in">Quelle crypto choisir ?</h2>
+    <p class="section-desc fade-in">
+      GP accepte Bitcoin, Ethereum, et les stablecoins (USDT/USDC). Voilà les différences importantes à connaître.
+    </p>
+
+    <div class="crypto-cards fade-in">
+      <div class="crypto-card btc">
+        <div class="crypto-logo">₿</div>
+        <div class="crypto-name">Bitcoin</div>
+        <div class="crypto-ticker">BTC</div>
+        <p class="crypto-desc">La plus connue. Cours variable — le montant en euros que tu envoies sera légèrement différent à l'arrivée selon le marché.</p>
+        <div class="crypto-pro">✓ Très liquide, acceptée partout</div>
+        <div class="crypto-con">✗ Frais réseau parfois élevés</div>
+      </div>
+      <div class="crypto-card eth">
+        <div class="crypto-logo">⬨</div>
+        <div class="crypto-name">Ethereum</div>
+        <div class="crypto-ticker">ETH</div>
+        <p class="crypto-desc">Deuxième plus grande crypto. Transactions rapides mais les "gas fees" peuvent grimper en période chargée.</p>
+        <div class="crypto-pro">✓ Transactions rapides</div>
+        <div class="crypto-con">✗ Gas fees variables</div>
+      </div>
+      <div class="crypto-card usdt">
+        <div class="crypto-logo">$</div>
+        <div class="crypto-name">Stablecoin</div>
+        <div class="crypto-ticker">USDT / USDC</div>
+        <p class="crypto-desc">Toujours égal à 1 dollar américain. Pas de risque de fluctuation entre le moment où tu achètes et celui où GP reçoit.</p>
+        <div class="crypto-pro">✓ Valeur stable, zéro surprise</div>
+        <div class="crypto-pro">✓ Recommandé pour les débutants</div>
+      </div>
+    </div>
+
+    <div class="tip fade-in">
+      <span class="tip-icon">💡</span>
+      <span>Si c'est ta première fois, pars sur <strong>USDT</strong>. 100€ envoyés = exactement 100$ de valeur reçue côté GP, sans se prendre la tête avec les fluctuations de cours.</span>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3 — CRÉER UN COMPTE -->
+<section id="sec3">
+  <div class="container">
+    <p class="section-label fade-in">Étape 2 — Inscription</p>
+    <h2 class="section-title fade-in">Créer ton compte Paybis</h2>
+    <p class="section-desc fade-in">
+      5 minutes maximum. Tu as besoin de : une adresse email, ton numéro de téléphone, et une pièce d'identité pour la vérification KYC.
+    </p>
+
+    <div class="steps fade-in">
+
+      <div class="step">
+        <div class="step-left">
+          <div class="step-num"><span class="step-num-inner">1</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-right">
+          <div class="step-tag">Inscription</div>
+          <div class="step-title">Créer ton compte</div>
+          <p class="step-body">
+            Va sur <a href="https://paybis.com/fr/user/register/" target="_blank" style="color:var(--accent)">paybis.com</a> et clique sur <strong>"S'inscrire"</strong>. Entre ton adresse email, crée un mot de passe, et confirme via le lien reçu dans ta boite mail.
+          </p>
+          <div class="mock">
+            <div class="mock-bar">
+              <div class="mock-dot r"></div>
+              <div class="mock-dot y"></div>
+              <div class="mock-dot g"></div>
+              <div class="mock-url">paybis.com/fr/user/register/</div>
+            </div>
+            <div class="mock-body">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:12px;">
+                  <div style="font-size:10px;color:var(--muted);margin-bottom:4px;">EMAIL</div>
+                  <div style="font-size:14px;color:#aaa;">votre@email.com</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:12px;">
+                  <div style="font-size:10px;color:var(--muted);margin-bottom:4px;">MOT DE PASSE</div>
+                  <div style="font-size:14px;color:#aaa;">••••••••••</div>
+                </div>
+              </div>
+              <div style="background:var(--accent);color:#000;font-weight:700;text-align:center;padding:12px;border-radius:8px;font-size:14px;">Créer mon compte</div>
+            </div>
+          </div>
+          <div class="tip">
+            <span class="tip-icon">✉️</span>
+            <span>Vérifie ton dossier spam si tu ne reçois pas l'email de confirmation dans les 2 minutes.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-left">
+          <div class="step-num"><span class="step-num-inner">2</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-right">
+          <div class="step-tag">Vérification KYC</div>
+          <div class="step-title">Vérifier ton identité</div>
+          <p class="step-body">
+            Obligatoire légalement. Ça prend <strong>2 à 5 minutes</strong>. Tu auras besoin d'une pièce d'identité (CNI ou passeport) et d'un selfie. Tout se fait depuis le navigateur ou l'app.
+          </p>
+          <div class="kyc-steps">
+            <div class="kyc-step">
+              <div class="k-icon">📄</div>
+              <div class="k-label">Photo pièce d'identité recto/verso</div>
+              <div class="k-time">~1 min</div>
+            </div>
+            <div class="kyc-step">
+              <div class="k-icon">🤳</div>
+              <div class="k-label">Selfie pour correspondance</div>
+              <div class="k-time">~30 sec</div>
+            </div>
+            <div class="kyc-step">
+              <div class="k-icon">✅</div>
+              <div class="k-label">Validation automatique</div>
+              <div class="k-time">~2 min</div>
+            </div>
+          </div>
+          <div class="warn">
+            <span class="tip-icon">⚠️</span>
+            <span>Les photos doivent être nettes, bien éclairées, et le document entier visible. Une photo floue = recommencer. Prends ça dans une pièce bien éclairée.</span>
+          </div>
+          <div class="tip">
+            <span class="tip-icon">💡</span>
+            <span>Tu peux acheter jusqu'à <strong>1000$</strong> sans passer le KYC complet au premier achat — mais pour nos commandes il vaut mieux le faire une bonne fois pour toutes.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4 — ACHETER -->
+<section id="sec4">
+  <div class="container">
+    <p class="section-label fade-in">Étape 3 — Achat</p>
+    <h2 class="section-title fade-in">Acheter ta crypto par carte</h2>
+    <p class="section-desc fade-in">
+      Une fois le compte créé et vérifié, le plus simple du monde. Voilà comment ça se passe exactement.
+    </p>
+
+    <div class="steps fade-in">
+
+      <div class="step">
+        <div class="step-left">
+          <div class="step-num"><span class="step-num-inner">1</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-right">
+          <div class="step-tag">Montant et crypto</div>
+          <div class="step-title">Sélectionner le montant et la devise</div>
+          <p class="step-body">
+            Sur la page d'accueil de Paybis, tu verras directement le widget d'achat. Sélectionne la crypto souhaitée (Bitcoin, Ethereum, ou USDT) et entre le montant en euros. <strong>N'oublie pas de rajouter les frais</strong> — prévois +7% pour être sûr de couvrir les frais carte.
+          </p>
+          <div class="mock">
+            <div class="mock-bar">
+              <div class="mock-dot r"></div>
+              <div class="mock-dot y"></div>
+              <div class="mock-dot g"></div>
+              <div class="mock-url">paybis.com/fr/</div>
+            </div>
+            <div class="mock-body">
+              <div class="widget">
+                <div class="widget-tabs">
+                  <div class="widget-tab active">Acheter</div>
+                  <div class="widget-tab">Vendre</div>
+                  <div class="widget-tab">Échanger</div>
+                </div>
+                <div class="widget-row">
+                  <div class="widget-field">
+                    <div class="widget-field-label">Vous dépensez</div>
+                    <div class="widget-field-val">
+                      <span><strong>107</strong> EUR</span>
+                      <span class="flag">🇪🇺</span>
+                    </div>
+                  </div>
+                  <div class="widget-field">
+                    <div class="widget-field-label">Vous recevez</div>
+                    <div class="widget-field-val">
+                      <span><strong>100</strong> USDT</span>
+                      <span style="font-size:16px;">$</span>
+                    </div>
+                  </div>
+                </div>
+                <div style="font-size:11px;color:var(--muted);margin-bottom:12px;">
+                  Méthode de paiement : <span style="color:var(--accent)">💳 Carte Visa / Mastercard</span>
+                </div>
+                <div class="widget-btn">Acheter USDT</div>
+                <div class="widget-note">Frais inclus · Taux actualisé toutes les 30 sec</div>
+              </div>
+            </div>
+          </div>
+          <div class="tip">
+            <span class="tip-icon">🔢</span>
+            <span>Exemple concret : ta commande GP est de <strong>100€</strong>. Entre <strong>107€</strong> dans le champ "Vous dépensez". Tu recevras ~100 USDT, ce qui compense les frais carte.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-left">
+          <div class="step-num"><span class="step-num-inner">2</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-right">
+          <div class="step-tag">Destination</div>
+          <div class="step-title">Entrer l'adresse wallet de GP</div>
+          <p class="step-body">
+            C'est ici que beaucoup font une erreur. Tu dois entrer l'adresse crypto que GP t'a communiquée — c'est l'équivalent d'un IBAN pour la crypto. Cette adresse t'a été transmise au moment de ta commande. Elle ressemble à ça :
+          </p>
+          <div class="wallet-address-mock">
+            <span class="addr-icon">📋</span>
+            <span>Exemple BTC : 1A1zP1eP5QGefi2DMPTfTL5SLmv7Divf<br>Exemple ETH : 0x742d35Cc6634C0532925a3b844Bc454e4438f44e<br>Exemple USDT (TRC20) : TH4cqcJQDzqAnpKg4SWGfFaBFhtJJ3p8W</span>
+          </div>
+          <div class="warn">
+            <span class="tip-icon">🚨</span>
+            <span><strong>Copie-colle TOUJOURS l'adresse</strong>, ne la tape jamais à la main. Une seule erreur et les fonds sont perdus définitivement. Vérifie les 4 premiers et les 4 derniers caractères après avoir collé.</span>
+          </div>
+          <div class="warn">
+            <span class="tip-icon">⚠️</span>
+            <span>Si tu envoies de l'<strong>USDT</strong>, vérifie que tu utilises le bon réseau : Paybis propose TRC20 (Tron) ou ERC20 (Ethereum). Demande à GP quel réseau il accepte avant d'envoyer.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-left">
+          <div class="step-num"><span class="step-num-inner">3</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-right">
+          <div class="step-tag">Paiement</div>
+          <div class="step-title">Payer par carte bancaire</div>
+          <p class="step-body">
+            Paybis t'affiche un récapitulatif complet avant de procéder. Vérifie l'adresse et le montant, puis clique sur confirmer. Entre les données de ta carte comme tu le ferais sur Amazon ou n'importe quel site. Un code 3D Secure sera envoyé sur ton téléphone pour valider.
+          </p>
+          <div class="mock">
+            <div class="mock-bar">
+              <div class="mock-dot r"></div>
+              <div class="mock-dot y"></div>
+              <div class="mock-dot g"></div>
+              <div class="mock-url">paybis.com — Paiement sécurisé</div>
+            </div>
+            <div class="mock-body">
+              <div style="display:grid;grid-template-columns:1fr;gap:10px;">
+                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:12px;">
+                  <div style="font-size:10px;color:var(--muted);margin-bottom:4px;">NUMÉRO DE CARTE</div>
+                  <div style="font-size:14px;color:#aaa;">4242 4242 4242 ████</div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                  <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:12px;">
+                    <div style="font-size:10px;color:var(--muted);margin-bottom:4px;">EXPIRATION</div>
+                    <div style="font-size:14px;color:#aaa;">12/27</div>
+                  </div>
+                  <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:12px;">
+                    <div style="font-size:10px;color:var(--muted);margin-bottom:4px;">CVV</div>
+                    <div style="font-size:14px;color:#aaa;">•••</div>
+                  </div>
+                </div>
+                <div style="background:var(--accent);color:#000;font-weight:700;text-align:center;padding:12px;border-radius:8px;font-size:14px;">🔒 Payer 107.00 EUR</div>
+              </div>
+            </div>
+          </div>
+          <div class="tip">
+            <span class="tip-icon">📱</span>
+            <span>Ton application bancaire va probablement t'envoyer une notification pour confirmer le paiement. C'est normal — c'est le protocole 3D Secure, il protège ta carte.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 5 — CONFIRMATION ET ENVOI -->
+<section id="sec5">
+  <div class="container">
+    <p class="section-label fade-in">Étape 4 — Confirmation</p>
+    <h2 class="section-title fade-in">Confirmation et délais</h2>
+    <p class="section-desc fade-in">
+      Une fois ton paiement validé, Paybis envoie automatiquement la crypto à l'adresse que tu as renseignée.
+    </p>
+
+    <div class="steps fade-in">
+      <div class="step">
+        <div class="step-left">
+          <div class="step-num"><span class="step-num-inner">1</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-right">
+          <div class="step-tag">Confirmation</div>
+          <div class="step-title">Email de confirmation Paybis</div>
+          <p class="step-body">
+            Tu reçois immédiatement un email de confirmation avec un numéro de transaction. Garde-le précieusement. Si quelque chose cloche, c'est ce numéro que tu donneras au support Paybis ou à GP.
+          </p>
+          <div class="mock">
+            <div class="mock-bar" style="gap:0;padding:8px 16px;">
+              <div style="font-size:12px;color:var(--muted);flex:1;">📧 De : noreply@paybis.com</div>
+            </div>
+            <div class="mock-body">
+              <div style="font-size:14px;font-weight:700;margin-bottom:8px;color:var(--green);">✅ Votre transaction est confirmée</div>
+              <div style="font-size:12px;color:var(--muted);line-height:1.8;">
+                Montant envoyé : <span style="color:var(--text)">100 USDT</span><br>
+                Réseau : <span style="color:var(--text)">TRC20 (Tron)</span><br>
+                Adresse destinataire : <span style="color:var(--accent);font-family:monospace;font-size:11px;">TH4cqcJQDz...p8W</span><br>
+                Hash transaction : <span style="color:var(--blue);font-family:monospace;font-size:11px;">a3f7c9d2e1...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-left">
+          <div class="step-num"><span class="step-num-inner">2</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-right">
+          <div class="step-tag">Délais réseau</div>
+          <div class="step-title">Délais de réception selon la crypto</div>
+          <p class="step-body">
+            Une fois Paybis ayant confirmé l'envoi, le réseau blockchain prend le relais. Les délais varient selon la crypto choisie.
+          </p>
+          <table class="fees-table">
+            <thead>
+              <tr>
+                <th>Crypto</th>
+                <th>Délai moyen</th>
+                <th>Confirmations réseau</th>
+                <th>Fiabilité</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>₿ Bitcoin (BTC)</td>
+                <td class="highlight">10 à 60 min</td>
+                <td>3 confirmations</td>
+                <td class="ok">✓ Fiable</td>
+              </tr>
+              <tr>
+                <td>⬨ Ethereum (ETH)</td>
+                <td class="highlight">2 à 10 min</td>
+                <td>12 confirmations</td>
+                <td class="ok">✓ Rapide</td>
+              </tr>
+              <tr>
+                <td>$ USDT TRC20</td>
+                <td class="highlight">1 à 3 min</td>
+                <td>20 confirmations</td>
+                <td class="ok">✓ Très rapide</td>
+              </tr>
+              <tr>
+                <td>$ USDT ERC20</td>
+                <td class="highlight">5 à 15 min</td>
+                <td>12 confirmations</td>
+                <td class="ok">✓ Stable</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-left">
+          <div class="step-num"><span class="step-num-inner">3</span></div>
+        </div>
+        <div class="step-right">
+          <div class="step-tag">Prévenir GP</div>
+          <div class="step-title">Confirmer l'envoi à General Pharmaceuticals</div>
+          <p class="step-body">
+            Une fois le paiement effectué, transmets à GP le <strong>hash de transaction</strong> (aussi appelé TXID). C'est une longue suite de caractères qui permet de vérifier ton paiement sur la blockchain, sans aucun doute possible. Tu le trouveras dans l'email de confirmation Paybis ou dans ton historique de commandes sur le site.
+          </p>
+          <div class="tip">
+            <span class="tip-icon">📤</span>
+            <span>Copie le TXID depuis l'email Paybis et envoie-le à GP. Avec ça, GP peut vérifier en temps réel que les fonds sont bien en route, même avant réception complète.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 6 — FRAIS DÉTAILLÉS -->
+<section id="sec6">
+  <div class="container">
+    <p class="section-label fade-in">Récap frais</p>
+    <h2 class="section-title fade-in">Tableau des frais complet</h2>
+    <p class="section-desc fade-in">
+      Pour pas avoir de mauvaise surprise. Tout ce qui peut être prélevé entre ta carte et le wallet de GP.
+    </p>
+
+    <div class="fade-in">
+      <table class="fees-table" style="background:var(--surface);border-radius:16px;overflow:hidden;border:1px solid var(--border);">
+        <thead>
+          <tr>
+            <th>Type de frais</th>
+            <th>Qui prélève</th>
+            <th>Montant estimé</th>
+            <th>Contournable ?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Commission Paybis</td>
+            <td>Paybis</td>
+            <td class="ok">0% (1er achat)</td>
+            <td style="color:var(--green)">✓ Oui, au premier achat</td>
+          </tr>
+          <tr>
+            <td>Frais processeur carte</td>
+            <td>Ta banque / Visa</td>
+            <td class="highlight">2 à 4%</td>
+            <td style="color:var(--muted)">✗ Non</td>
+          </tr>
+          <tr>
+            <td>Commission Paybis (achats suivants)</td>
+            <td>Paybis</td>
+            <td class="highlight">~1.49 à 2%</td>
+            <td style="color:var(--muted)">✗ Non</td>
+          </tr>
+          <tr>
+            <td>Frais réseau BTC (miners)</td>
+            <td>Réseau Bitcoin</td>
+            <td class="highlight">Variable, ~1 à 5$</td>
+            <td style="color:var(--muted)">✗ Non</td>
+          </tr>
+          <tr>
+            <td>Frais réseau ETH (gas)</td>
+            <td>Réseau Ethereum</td>
+            <td class="highlight">Variable, ~1 à 15$</td>
+            <td style="color:var(--muted)">✗ Non</td>
+          </tr>
+          <tr>
+            <td>Frais réseau USDT TRC20</td>
+            <td>Réseau Tron</td>
+            <td class="ok">Très bas, <1$</td>
+            <td style="color:var(--green)">✓ Faibles</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tip fade-in" style="margin-top:24px;">
+      <span class="tip-icon">💡</span>
+      <span>Pour minimiser les frais réseau, choisis <strong>USDT en TRC20</strong> : les frais de réseau Tron sont quasi-nuls, et le USDT est stable. C'est la combinaison la plus économique pour des achats classiques.</span>
+    </div>
+
+    <hr class="divider">
+
+    <div class="fade-in">
+      <h3 style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:20px;">Checklist avant d'envoyer</h3>
+      <ul class="checklist">
+        <li>
+          <div class="check-icon">✓</div>
+          <span>J'ai bien sélectionné la bonne crypto (celle que GP accepte)</span>
+        </li>
+        <li>
+          <div class="check-icon">✓</div>
+          <span>J'ai vérifié le réseau blockchain si je envoie du USDT (TRC20 vs ERC20)</span>
+        </li>
+        <li>
+          <div class="check-icon">✓</div>
+          <span>J'ai collé l'adresse wallet de GP (pas tapée à la main) et vérifié les 4 premiers et 4 derniers caractères</span>
+        </li>
+        <li>
+          <div class="check-icon">✓</div>
+          <span>J'ai ajouté environ 7% au montant de ma commande pour couvrir les frais carte</span>
+        </li>
+        <li>
+          <div class="check-icon">✓</div>
+          <span>J'ai mon téléphone à portée pour valider le 3D Secure de ma banque</span>
+        </li>
+        <li>
+          <div class="check-icon">✓</div>
+          <span>Après l'envoi, je transmets le TXID (hash de transaction) à GP pour confirmer</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section" id="sec-cta">
+  <div class="container">
+    <h2>Prêt à passer ta commande ?</h2>
+    <p>Crée ton compte Paybis, 5 minutes, et c'est bon pour toutes tes commandes futures.</p>
+    <a href="https://paybis.com/fr/user/register/" target="_blank" class="btn-primary">
+      🚀 Ouvrir Paybis et s'inscrire
+    </a>
+    <div style="margin-top:24px;font-size:13px;color:var(--muted);">
+      Des questions ? Reviens vers nous sur le forum ou le canal Telegram.
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>Guide rédigé pour les membres de <strong>General Pharmaceuticals</strong> — Usage interne · <a href="https://paybis.com/fr/" target="_blank">paybis.com</a></p>
+  <p style="margin-top:8px;font-size:11px;opacity:0.5;">Les frais mentionnés sont indicatifs et peuvent varier selon les conditions du marché et ta banque.</p>
+</footer>
+
+<script>
+  // Fade in on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // Progress dots
+  const sections = ['sec0','sec1','sec2','sec3','sec4','sec5','sec6'];
+  const dots = document.querySelectorAll('.progress-dot');
+
+  function scrollToSection(i) {
+    document.getElementById(sections[i]).scrollIntoView({ behavior: 'smooth' });
+  }
+
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const idx = sections.indexOf(e.target.id);
+        if (idx !== -1) {
+          dots.forEach(d => d.classList.remove('active'));
+          dots[idx] && dots[idx].classList.add('active');
+        }
+      }
+    });
+  }, { threshold: 0.4 });
+
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) sectionObserver.observe(el);
+  });
+</script>
+
+</body>
+</html>
